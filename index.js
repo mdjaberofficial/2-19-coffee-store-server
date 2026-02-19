@@ -3,7 +3,7 @@ const cors = require('cors');
 
 require('dotenv').config() // or import 'dotenv/config' if you're using ES6
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
@@ -31,20 +31,33 @@ async function run() {
 
     const coffeeCollection = client.db("coffeeDB").collection("coffees");
 
+     //Get a list of coffee from the "coffees" collection in the "coffeeDB" database
+    app.get('/coffees', async (req, res) => {
+        const result = await coffeeCollection.find().toArray();
+        res.send(result);
+
+    });
+
     //Add a new coffee to the "coffees" collection in the "coffeeDB" database
     app.post('/addCoffee', async (req, res) => {
       const newCoffee = req.body;
       console.log(newCoffee);
-      const result = await client.db("coffeeDB").collection("coffees").insertOne(newCoffee);
+      const result = await coffeeCollection.insertOne(newCoffee);
       res.send(result);
     });
 
-    //Get a list of coffee from the "coffees" collection in the "coffeeDB" database
-    app.get('/coffees', async (req, res) => {
-        const result = await await coffeeCollection.find().toArray();
+    //Delete a coffee from the "coffees" collection in the "coffeeDB" database
+    app.delete('/coffees/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) }; //make sure to import ObjectId from mongodb
+        const result = await coffeeCollection.deleteOne(query);
         res.send(result);
-
     });
+
+   
+
+    
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
