@@ -31,6 +31,15 @@ async function run() {
 
     const coffeeCollection = client.db("coffeeDB").collection("coffees");
 
+    //To get specific coffee by id from the "coffees" collection in the "coffeeDB" database
+    app.get('/coffees/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await coffeeCollection.findOne(query);
+        res.send(result);
+    });
+
+
      //Get a list of coffee from the "coffees" collection in the "coffeeDB" database
     app.get('/coffees', async (req, res) => {
         const result = await coffeeCollection.find().toArray();
