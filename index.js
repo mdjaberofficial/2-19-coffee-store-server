@@ -30,6 +30,16 @@ async function run() {
     await client.connect();
 
     const coffeeCollection = client.db("coffeeDB").collection("coffees");
+    const userCollection = client.db("coffeeDB").collection("users");
+
+    //user related api
+    app.post('/users', async (req, res) => {
+        const userProfile = req.body;
+        console.log(userProfile);
+        const result = await userCollection.insertOne(userProfile);
+        res.send(result);
+    });
+
 
     //To get specific coffee by id from the "coffees" collection in the "coffeeDB" database
     app.get('/coffees/:id', async (req, res) => {
