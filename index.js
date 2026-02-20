@@ -32,7 +32,51 @@ async function run() {
     const coffeeCollection = client.db("coffeeDB").collection("coffees");
     const userCollection = client.db("coffeeDB").collection("users");
 
-    //user related api
+    //user get api to get user profile from the "users" collection in the "coffeeDB" database
+    app.get('/users/', async (req, res) => {
+        const result = await userCollection.find().toArray();
+        res.send(result);
+    });
+
+    //get user profile by id from the "users" collection in the "coffeeDB" database
+    app.get('/users/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await userCollection.findOne(query);
+        res.send(result);
+    });
+
+
+    //delete user profile from the "users" collection in the "coffeeDB" database
+    app.delete('/users/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await userCollection.deleteOne(query);
+        res.send(result);
+    });
+
+    //single data update in user
+    app.patch('/users', async (req, res) => {
+      const {email, lastSignInTime} = req.body;
+      const filter = { email: email };
+      const updateDoc = {
+        $set: {
+          lastSignInTime: lastSignInTime
+        },
+      };
+      const result = await userCollection.updateOne(filter, updateDoc);
+      res.send(result);
+
+
+      
+      
+    });
+
+    
+
+
+
+    //user post api to add user profile to the "users" collection in the "coffeeDB" database
     app.post('/users', async (req, res) => {
         const userProfile = req.body;
         console.log(userProfile);
